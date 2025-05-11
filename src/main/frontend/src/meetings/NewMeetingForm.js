@@ -4,6 +4,8 @@ export default function NewMeetingForm({onSubmit}) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
+
+
     function submit(event) {
         event.preventDefault();
         onSubmit({title, description, participants: []});
