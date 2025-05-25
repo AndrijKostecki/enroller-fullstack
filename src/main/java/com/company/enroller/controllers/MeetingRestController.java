@@ -87,7 +87,7 @@ public class MeetingRestController {
     }
 
     @PutMapping("/{id}/participants/{login}")
-    public ResponseEntity<?> addParticipant(@PathVariable long id, @PathVariable String login) {
+    public ResponseEntity<?> addParticipantToMeeting(@PathVariable long id, @PathVariable String login) {
         Meeting meeting = meetingService.findById(id);
         if (meeting == null) {
             return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
@@ -108,7 +108,7 @@ public class MeetingRestController {
 
     @DeleteMapping("/{id}/participants/{login}")
 
-    public ResponseEntity<?> removeParticipant(@PathVariable long id, @PathVariable String login) {
+    public ResponseEntity<?> removeParticipantToMeeting(@PathVariable long id, @PathVariable String login) {
         Meeting meeting = meetingService.findById(id);
         if (meeting == null) {
             return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);

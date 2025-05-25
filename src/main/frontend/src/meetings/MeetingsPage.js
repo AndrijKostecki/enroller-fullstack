@@ -43,7 +43,38 @@ export default function MeetingsPage({username}) {
             setMeetings(nextMeetings);
 
         }
+
     }
+
+    async function handleAddParticipant(participant, meeting) {
+            const response = await fetch(`/api/meetings/${meeting.id}/participants/${username}`, {
+                method: 'PUT',
+                body: JSON.stringify(participant),
+                headers: {'Content-Type': 'application/json'}
+            });
+            if (response.ok) {
+                const newParticipant = await response.json();
+                setMeetings(participant);
+
+            }
+        }
+
+    /*async function handleDeleteParticipant(participant, meeting) {
+
+        const response = await fetch(`/api/meetings/${meeting.id}/participants/${participant.}`, {
+            method: 'DELETE',
+            //body: JSON.stringify(meeting),
+            //headers: {'Content-Type': 'application/json'}
+        });
+        if (response.ok) {
+            const nextMeetings = meetings.filter(m => m !== meeting);
+            setMeetings(nextMeetings);
+
+        }
+    }*/
+
+
+
 
     return (
         <div>
@@ -56,6 +87,15 @@ export default function MeetingsPage({username}) {
             {meetings.length > 0 &&
                 <MeetingsList meetings={meetings} username={username}
                               onDelete={handleDeleteMeeting}/>}
+
+            {
+                meetings.length > 0 && (
+                    <button onClick={() => handleAddParticipant({ username, meeting: meetings[0] })}
+                            onHandleAddParticipant={handleAddParticipant}>Dołącz do spotkania</button>
+
+
+                )
+            }
 
 
 
