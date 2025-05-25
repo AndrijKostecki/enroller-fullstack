@@ -50,7 +50,7 @@ public class MeetingRestController {
     public ResponseEntity<?> deleteMeeting(@PathVariable("id") long id) {
         Meeting meeting = meetingService.findById(id);
         if (meeting == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         meetingService.delete(meeting);
         return new ResponseEntity<Meeting>(meeting, HttpStatus.NO_CONTENT);
@@ -70,10 +70,62 @@ public class MeetingRestController {
     public ResponseEntity<?> updateMeeting(@PathVariable("id") long id, @RequestBody Meeting meeting) {
         Meeting currentMeeting = meetingService.findById(id);
         if (currentMeeting == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         meeting.setId(currentMeeting.getId());
         meetingService.update(meeting);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<?> getParticipants(@PathVariable long id) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(meetingService.getParticipants(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/participants/{login}")
+    public ResponseEntity<?> addParticipant(@PathVariable long id, @PathVariable String login) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+
+        Participant participant = participantService.findByLogin(login);
+        if (participant == null) {
+            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (meeting.getParticipants().contains(participant)) {
+            return new ResponseEntity<>("Participant already in the meeting", HttpStatus.CONFLICT);
+        }
+
+        meetingService.addParticipantToMeeting(id, participant);
+        return new ResponseEntity<>("Participant added to meeting", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/participants/{login}")
+
+    public ResponseEntity<?> removeParticipant(@PathVariable long id, @PathVariable String login) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+
+        Participant participant = participantService.findByLogin(login);
+        if (participant == null) {
+            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!meeting.getParticipants().contains(participant)) {
+            return new ResponseEntity<>("Participant not part of this meeting", HttpStatus.NOT_FOUND);
+        }
+
+        meetingService.removeParticipantFromMeeting(id, participant);
+        return new ResponseEntity<>("Participant removed from meeting", HttpStatus.OK);
+    }
+
+
 }

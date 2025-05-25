@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Component("meetingService")
 public class MeetingService {
@@ -68,6 +69,30 @@ public class MeetingService {
         Collection resultList = query.setParameter("title", meeting.getTitle()).setParameter("date", meeting.getDate())
                 .list();
         return query.list().size() != 0;
+    }
+
+    public Collection<Participant> getParticipants(long meetingId) {
+        Meeting meeting = findById(meetingId);
+        if (meeting == null) {
+            return Collections.emptyList();
+        }
+        return meeting.getParticipants();
+    }
+
+    public void addParticipantToMeeting(long meetingId, Participant participant) {
+        Meeting meeting = findById(meetingId);
+        if (meeting != null) {
+            meeting.addParticipant(participant);
+            update(meeting);
+        }
+    }
+
+    public void removeParticipantFromMeeting(long meetingId, Participant participant) {
+        Meeting meeting = findById(meetingId);
+        if (meeting != null) {
+            meeting.removeParticipant(participant);
+            update(meeting);
+        }
     }
 
 }
