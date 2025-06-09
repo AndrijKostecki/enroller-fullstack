@@ -94,8 +94,12 @@ public class MeetingRestController {
         }
 
         Participant participant = participantService.findByLogin(login);
+
         if (participant == null) {
-            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+            participant = new Participant();
+            participant.setLogin(login);
+            participant.setPassword("");
+            participantService.add(participant);
         }
 
         if (meeting.getParticipants().contains(participant)) {
@@ -103,11 +107,10 @@ public class MeetingRestController {
         }
 
         meetingService.addParticipantToMeeting(id, participant);
-        return new ResponseEntity<>("Participant added to meeting", HttpStatus.OK);
+        return new ResponseEntity<>(meeting, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/participants/{login}")
-
     public ResponseEntity<?> removeParticipantToMeeting(@PathVariable long id, @PathVariable String login) {
         Meeting meeting = meetingService.findById(id);
         if (meeting == null) {
@@ -124,8 +127,9 @@ public class MeetingRestController {
         }
 
         meetingService.removeParticipantFromMeeting(id, participant);
-        return new ResponseEntity<>("Participant removed from meeting", HttpStatus.OK);
+        return new ResponseEntity<>(meeting, HttpStatus.OK);
     }
+
 
 
 }
